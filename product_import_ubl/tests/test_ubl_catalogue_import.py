@@ -11,7 +11,13 @@ class TestUblOrderImport(SavepointCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
+        cls.env = cls.env(
+            context={
+                **cls.env.context,
+                "tracking_disable": True,
+                "queue_job__no_delay": True,
+            }
+        )
         cls.supplier = cls.env["res.partner"].create(
             {"name": "Medical", "ref": "78456123"}
         )

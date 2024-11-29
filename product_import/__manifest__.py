@@ -13,9 +13,12 @@
         "stock",
         # OCA/edi
         "base_business_document_import",
+        # OCA/queue
+        "queue_job",
     ],
     "data": [
         "security/ir.model.access.csv",
         "wizard/product_import_view.xml",
+        "data/job_function.xml",
     ],
 }
