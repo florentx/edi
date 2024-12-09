@@ -5,9 +5,9 @@
         <field name="parent_id" ref="queue_job.channel_root" />
     </record>
 
-    <record id="job_create_update_product" model="queue.job.function">
+    <record id="job_create_update_products" model="queue.job.function">
         <field name="model_id" ref="model_product_import" />
-        <field name="method">_create_update_product</field>
+        <field name="method">_create_update_products</field>
         <field name="channel_id" ref="channel_product_import" />
     </record>
 
