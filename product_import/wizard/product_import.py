@@ -154,7 +154,9 @@ class ProductImport(models.TransientModel):
         # Important: barcode is unique key of product.template model
         # So records product.product are created with company_id=False.
         # Only the pricelist (product.supplierinfo) is company-specific.
-        product_company_id = self.env.context.get("product_company_id", False)
+        import_company = self.env["res.company"].browse(
+            self.env.context.get("product_company_id")
+        )
         if not parsed_product["barcode"]:
             chatter_msg.append(
                 _("Cannot import product without barcode: %s") % (parsed_product,)
@@ -166,9 +168,12 @@ class ProductImport(models.TransientModel):
             .search([("barcode", "=", parsed_product["barcode"])], limit=1)
         )
         uom = self._bdimport._match_uom(parsed_product["uom"], chatter_msg)
-        currency = self._bdimport._match_currency(
-            parsed_product["currency"], chatter_msg
-        )
+        if parsed_product["currency"]:
+            currency = self._bdimport._match_currency(
+                parsed_product["currency"], chatter_msg
+            )
+        else:
+            currency = (import_company or self.env.company).currency_id
 
         product_vals = {
             "active": parsed_product.get("active", True),
@@ -187,7 +192,7 @@ class ProductImport(models.TransientModel):
             "price": parsed_product["price"],
             "currency_id": currency.id,
             "min_qty": parsed_product["min_qty"],
-            "company_id": product_company_id,
+            "company_id": import_company.id,
             "delay": parsed_product.get("sale_delay", 0),
         }
         product_vals["seller_ids"] = self._prepare_supplierinfo(seller_info, product)
